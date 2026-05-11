@@ -4,8 +4,6 @@ import com.microsoft.playwright.options.AriaRole;
 import context.TestContext;
 import io.cucumber.java.en.*;
 
-import com.microsoft.playwright.APIResponse;
-import java.util.regex.Pattern;
 import com.microsoft.playwright.Page;
 
 import static com.microsoft.playwright.assertions.PlaywrightAssertions.*;
@@ -14,64 +12,66 @@ import static com.microsoft.playwright.assertions.PlaywrightAssertions.*;
 public class LoginSteps {
 
     private final TestContext context;
+
     public LoginSteps(TestContext context) {
         this.context = context;
     }
 
     @Given("User is on login page")
     public void user_is_on_login_page() {
-        context.page.navigate("https://www.saucedemo.com/");
+        context.loginPage.goToLoginPage();
     }
+
     @When("User enters {string} and {string}")
     public void userEntersValidUsernameAndPassword(String username, String password) {
-        context.page.locator("[data-test=\"username\"]").fill(username);
-        context.page.locator("[data-test=\"password\"]").fill(password);
+        context.loginPage.enterUsername(username);
+        context.loginPage.enterPassword(password);
     }
+
     @And("User clicks log in button")
     public void user_clicks_log_in_button() {
-        context.page.locator("[data-test=\"login-button\"]").click();
+        context.loginPage.clickLogin();
     }
+
     @Then("User is navigated to home page")
     public void user_is_navigated_to_home_page() {
-        assertThat(context.page).hasURL(Pattern.compile(".*\\/inventory.*"));
+        context.loginPage.homePageValidator();
     }
 
     @Then("API should return successful login response")
     public void check_login_API_response() {
-        APIResponse response = context.page.request().get("https://www.saucedemo.com/");
-        assertThat(response).isOK();
+        context.loginPage.APIValidator(true);
     }
 
     @Then("User is informed that account has been locked out")
     public void user_is_locked_out() {
-        assertThat(context.page.locator("[data-test=\"error\"]")).containsText("Epic sadface: Sorry, this user has been locked out.");
+        context.loginPage.lockedOutValidator();
     }
 
     @Then("API returns that service is unavailable")
     public void check_login_API_response_unavailable() {
-        APIResponse response = context.page.request().get("https://www.saucedemo.com/"); //will fail since demo page is not made for this
-        assertThat(response).not().isOK();
+        context.loginPage.APIValidator(false);
     }
+
     @Then("User is informed that login fails with message: {string}")
     public void login_fails_message(String message) {
-        assertThat(context.page.locator("[data-test=\"error\"]")).containsText(message);
+        context.loginPage.errorValidator(message);
     }
+
     @And("User clicks menu and logout")
-    public void click_logout(){
-        context.page.getByRole(AriaRole.BUTTON, new Page.GetByRoleOptions().setName("Open Menu")).click();
-        context.page.locator("[data-test=\"logout-sidebar-link\"]").click();
+    public void logout_shop() {
+        context.storePage.logoutShop();
     }
+
     @Then("User is in login page")
-    public void user_in_login_page_check(){
-        assertThat(context.page.locator("[data-test=\"username\"]")).isVisible();
+    public void user_in_login_page_check() {
+        context.loginPage.loginPageValidator();
     }
+
     @Then("User clicks back on browser")
-    public void user_click_back_browser(){
+    public void user_click_back_browser() {
         context.page.goBack();
     }
-
-
-
 
 
 //    @Then("User should exist in database")

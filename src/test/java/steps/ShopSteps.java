@@ -24,18 +24,18 @@ public class ShopSteps {
     }
 
     @Given("User is logged in")
-    public void user_is_on_login_page() {
-        assertThat(context.page.locator("[class=\"title\"]")).hasText("Products");
+    public void user_is_on_shop_page() {
+        context.storePage.shopPageValidation();
     }
 
     @Then("Product {string} is listed")
     public void product_listed(String product) {
-        assertThat(context.page.getByText(product, new Page.GetByTextOptions().setExact(true))).isVisible();
+        context.storePage.productListed(product);
     }
 
     @When("User clicks to sort products by {string} {string}")
     public void click_sort_by(String name, String type) {
-        context.page.locator("[data-test=\"product-sort-container\"]").selectOption(type);
+        context.storePage.sortByType(type);
     }
 
     @Then("Products sorted from {string} {string}")

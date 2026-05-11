@@ -1,5 +1,5 @@
 @RegressionTest
-@ui @api @loggedIn #@db
+@ui @api @loggedIn @pageStart #@db
 Feature: feature to test shop functionality
 
   Background:
@@ -16,7 +16,7 @@ Feature: feature to test shop functionality
       | Sauce Labs Onesie                 |
       | Test.allTheThings() T-Shirt (Red) |
 
-  Scenario Outline: Verify that products can be sorted by <name>
+  Scenario Outline: Verify that products can be sorted by <name> from "<type>"
     When User clicks to sort products by "<name>" "<type>"
     Then Products sorted from "<name>" "<type>"
     Examples:

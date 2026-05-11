@@ -1,7 +1,7 @@
 #Comments
 
 @RegressionTest
-@ui @api #@db
+@ui @api @pageStart #@db
 Feature: feature to test login functionality
 
 #First login test

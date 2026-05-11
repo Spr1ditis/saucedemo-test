@@ -28,6 +28,7 @@ public class Hooks {
         context.browserContext = context.browser.newContext();
         context.page = context.browserContext.newPage();
 
+
         // THE COOKIE STEALER LOGIC
         if (sharedCookies == null) {
             performFullUILogin();
@@ -36,6 +37,10 @@ public class Hooks {
             context.browserContext.addCookies(sharedCookies);
             context.page.navigate("https://www.saucedemo.com/inventory.html");
         }
+    }
+    @Before(value = "@pageStart")
+    public void NewLoginPage() {
+        context.initializePages();
     }
 
     private void performFullUILogin() {
