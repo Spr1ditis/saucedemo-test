@@ -2,70 +2,60 @@
 
 @RegressionTest
 @ui @api @pageStart #@db
-Feature: feature to test login functionality
+Feature: Feature to test login functionality
 
 #First login test
   Scenario Outline: Check login is successful with valid credentials
     Given User is on login page
     When User enters "<username>" and "<password>"
-    And User clicks log in button
-    Then User is navigated to home page
+    And User clicks Submit button
+    Then User is logged in their contact list page
     Then API should return successful login response
     #Then User <username> should exist in database
 
     Examples:
       | username      | password     |
-      | standard_user | secret_sauce |
-      | problem_user  | secret_sauce |
+      | test@fake.com | myPassword |
+      | testy@email.com  | 123$%^A |
 
-  Scenario Outline: Check locked out user status appears
+  Scenario Outline: User is informed when incorrect username or password is entered
     Given User is on login page
     When User enters "<username>" and "<password>"
-    And User clicks log in button
-    Then User is informed that account has been locked out
-    #Then User <username> should exist in database and has locked status
+    And User clicks Submit button
+    Then Warning informs user that username or password is incorrect
+    #Then User <username> should exist in database
 
     Examples:
-      | username        | password     |
-      | locked_out_user | secret_sauce |
+      | username      | password     |
+      | test@fake.com | myPassword1 |
+      | testy2@email.com  | 123$%^A |
+    |      b             |     a    |
 
-
-  Scenario Outline: Check login fails, when user tries to login with invalid password
+    @deleteUser
+  Scenario Outline: New user can be created
     Given User is on login page
-    When User enters "<username>" and "<password>"
-    And User clicks log in button
-    Then User is informed that login fails with message: "<message>"
+    When User clicks on Sign up button
+    And Enters "<firstName>", "<lastName>", "<email>", "<password>" and clicks submit
+    Then User is logged in their contact list page
+    #Then User <username> should exist in database
 
     Examples:
-      | username      | password      | message                                                                   |
-      | standard_user | secret_sauce2 | Epic sadface: Username and password do not match any user in this service |
-      | problem_user  | secret        | Epic sadface: Username and password do not match any user in this service |
+      | firstName      | lastName     | email | password |
+      | John | Smith | email11@epasts.com       | password1 |
+      | Jane | Doe | email22@epasts.com       | password2 |
+      | Janis | Berzins | email33@epasts.com       | password3 |
 
-  Scenario Outline: Check that login fails when credential fields are empty
-    Given User is on login page
-    When User enters "<username>" and "<password>"
-    And User clicks log in button
-    Then User is informed that login fails with message: "<message>"
-
-    Examples:
-      | username     | password      | message                            |
-      |              | secret_sauce2 | Epic sadface: Username is required |
-      | problem_user |               | Epic sadface: Password is required |
-      |              |               | Epic sadface: Username is required |
-
-  Scenario Outline: Logout prevents User to go back to see home page
-    Given User is on login page
-    When User enters "<username>" and "<password>"
-    And User clicks log in button
-    Then User is navigated to home page
-    And User clicks menu and logout
-    Then User is in login page
-    And User clicks back on browser
-    Then User is in login page
-    #Then User <username> should exist in database and has locked status
+      @deleteUser
+  Scenario Outline: New user can not be created with taken email
+    Given User with "<firstName>", "<lastName>", "<email>", "<password>" has been added via API
+    And User is on login page
+    When User clicks on Sign up button
+    And Enters "<firstName>", "<lastName>", "<email>", "<password>" and clicks submit
+    Then User is informed that email address is already in use
+    #Then User <username> should exist in database
 
     Examples:
-      | username        | password     |
-      | standard_user | secret_sauce |
-
-
+      | firstName      | lastName     | email | password |
+      | John | Smith | email11@epasts.com       | password1 |
+      | Jane | Doe | email22@epasts.com       | password2 |
+      | Janis | Berzins | email33@epasts.com       | password3 |

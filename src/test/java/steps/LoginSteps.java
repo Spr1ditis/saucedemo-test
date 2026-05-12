@@ -19,59 +19,58 @@ public class LoginSteps {
 
     @Given("User is on login page")
     public void user_is_on_login_page() {
-        context.loginPage.goToLoginPage();
+        context.loginPage.navigateToLoginURL();
     }
 
     @When("User enters {string} and {string}")
     public void userEntersValidUsernameAndPassword(String username, String password) {
-        context.loginPage.enterUsername(username);
+        context.loginPage.enterEmail(username);
         context.loginPage.enterPassword(password);
     }
 
-    @And("User clicks log in button")
+    @And("User clicks Submit button")
     public void user_clicks_log_in_button() {
-        context.loginPage.clickLogin();
+        context.loginPage.clickSubmit();
     }
 
-    @Then("User is navigated to home page")
-    public void user_is_navigated_to_home_page() {
-        context.loginPage.homePageValidator();
+    @Then("User is logged in their contact list page")
+    public void user_is_on_contact_page() {
+        context.contactlistPage.checkContactListDisplayed();
     }
 
     @Then("API should return successful login response")
     public void check_login_API_response() {
-        context.loginPage.APIValidator(true);
+        context.contactServiceAPI.checkContactListPageAPI(true);
     }
 
-    @Then("User is informed that account has been locked out")
-    public void user_is_locked_out() {
-        context.loginPage.lockedOutValidator();
+    @Then("Warning informs user that username or password is incorrect")
+    public void wrongLoginDetails() {
+        context.loginPage.checkWrongLogin();
     }
 
-    @Then("API returns that service is unavailable")
-    public void check_login_API_response_unavailable() {
-        context.loginPage.APIValidator(false);
+    @When("User clicks on Sign up button")
+    public void clickSignUp() {
+        context.loginPage.clickSignUp();
     }
 
-    @Then("User is informed that login fails with message: {string}")
-    public void login_fails_message(String message) {
-        context.loginPage.errorValidator(message);
+    @And("Enters {string}, {string}, {string}, {string} and clicks submit")
+    public void user_fills_new_data(String username, String surname, String email, String password) {
+        context.signupPage.enterNewUserData(username, surname, email, password);
+        context.page.pause();
+        context.signupPage.clickSubmit();
+        context.lastCreatedEmail = email;
+        context.lastCreatedPassword = password;
     }
 
-    @And("User clicks menu and logout")
-    public void logout_shop() {
-        context.storePage.logoutShop();
+    @Then("User is informed that email address is already in use")
+    public void emailTaken(){
+        context.signupPage.checkEmailExistError();
+    }
+    @Given("User with {string}, {string}, {string}, {string} has been added via API")
+    public void addUserAPI(String name, String surname, String email, String password){
+        context.contactServiceAPI.addNewUserAPI(name, surname, email, password);
     }
 
-    @Then("User is in login page")
-    public void user_in_login_page_check() {
-        context.loginPage.loginPageValidator();
-    }
-
-    @Then("User clicks back on browser")
-    public void user_click_back_browser() {
-        context.page.goBack();
-    }
 
 
 //    @Then("User should exist in database")
